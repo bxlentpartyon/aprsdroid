@@ -2,6 +2,7 @@ package org.aprsdroid.app
 
 import android.Manifest
 import _root_.net.ab0oo.aprs.parser.APRSPacket
+
 import _root_.java.io.{InputStream, OutputStream}
 
 object AprsBackend {
@@ -87,7 +88,14 @@ object AprsBackend {
 			R.xml.backend_usb,
 			Set(),
 			CAN_DUPLEX,
-			PASSCODE_NONE)
+			PASSCODE_NONE),
+		"digirig" -> new BackendInfo(
+			(s, p) => new DigiRig(s, p),
+			R.xml.backend_digirig,
+			Set(),
+			CAN_DUPLEX,
+			PASSCODE_NONE
+		)
 		)
 
 	class ProtoInfo(
@@ -112,7 +120,7 @@ object AprsBackend {
 		"kenwood" -> new ProtoInfo(
 			(s, is, os) => new KenwoodProto(s, is, os),
 			R.xml.proto_kenwood, "link")
-	);
+	)
 	def defaultProtoInfo(p : String) : ProtoInfo = {
 		proto_collection.get(p) match {
 		case Some(pi) => pi
