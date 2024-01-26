@@ -47,6 +47,7 @@ class UsbTnc(service : AprsService, prefs : PrefsWrapper) extends AprsBackend(pr
 	var con : UsbDeviceConnection = null
 	var ser : UsbSerialInterface = null
 	var alreadyRunning = false
+	var baudrate = 0
 
 	val intent = new Intent(USB_PERM_ACTION)
 	val pendingIntent = PendingIntent.getBroadcast(service, 0, intent, 0)
@@ -108,7 +109,15 @@ class UsbTnc(service : AprsService, prefs : PrefsWrapper) extends AprsBackend(pr
 	}
 
 	def update(packet : APRSPacket) : String = {
+		ser.setRTS(true)
 		proto.writePacket(packet)
+		val bits_per_byte = 8
+		val bits_in_frame = packet.toAX25Frame().length / bits_per_byte
+		val ms_per_s = 1000
+		val sleep_ms = bits_in_frame * ms_per_s / baudrate
+		val sleep_pad_ms = 50
+		Thread.sleep(sleep_ms + sleep_pad_ms)
+		ser.setRTS(false)
 		"USB OK"
 	}
 
@@ -151,7 +160,7 @@ class UsbTnc(service : AprsService, prefs : PrefsWrapper) extends AprsBackend(pr
 				service.postAbort(service.getString(R.string.p_serial_unsupported))
 				return
 			}
-			val baudrate = prefs.getStringInt("baudrate", 115200)
+			baudrate = prefs.getStringInt("baudrate", 115200)
 			ser.setBaudRate(baudrate)
 			ser.setDataBits(UsbSerialInterface.DATA_BITS_8)
 			ser.setStopBits(UsbSerialInterface.STOP_BITS_1)
