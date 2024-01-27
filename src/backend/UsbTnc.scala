@@ -166,6 +166,7 @@ class UsbTnc(service : AprsService, prefs : PrefsWrapper) extends AprsBackend(pr
 			ser.setStopBits(UsbSerialInterface.STOP_BITS_1)
 			ser.setParity(UsbSerialInterface.PARITY_NONE)
 			ser.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+			ser.setRTS(false)
 
 			// success: remember this for usb-attach launch
 			prefs.prefs.edit().putString(UsbTnc.deviceHandle(dev), prefs.getString("proto", "kiss")).commit()
