@@ -110,12 +110,13 @@ class UsbTnc(service : AprsService, prefs : PrefsWrapper) extends AprsBackend(pr
 
 	def update(packet : APRSPacket) : String = {
 		ser.setRTS(true)
+		val sleep_pad_ms = 500
+		Thread.sleep(sleep_pad_ms)
 		proto.writePacket(packet)
 		val bits_per_byte = 8
 		val bits_in_frame = packet.toAX25Frame().length / bits_per_byte
 		val ms_per_s = 1000
 		val sleep_ms = bits_in_frame * ms_per_s / baudrate
-		val sleep_pad_ms = 50
 		Thread.sleep(sleep_ms + sleep_pad_ms)
 		ser.setRTS(false)
 		"USB OK"
