@@ -90,7 +90,7 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(
 	var proto : TncProto = null
 	var sis : SerialInputStream = null
 
-	def start() = {
+	override def start() = {
 		val filter = new IntentFilter(USB_PERM_ACTION)
 		filter.addAction(ACTION_USB_DETACHED)
 		service.registerReceiver(receiver, filter)
@@ -135,7 +135,7 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(
 		service.postAbort(service.getString(R.string.p_serial_notfound))
 	}
 
-	def stop() {
+	override def stop() {
                 // Stop USB thread
 		if (alreadyRunning)
 			service.unregisterReceiver(receiver)
