@@ -43,7 +43,7 @@
 			android:dialogTitle="@string/p_link_entry"
 			android:entries="@array/p_afsk_e"
 			android:entryValues="@array/p_afsk_ev"
-			android:key="afsk_link"
+			android:key="afsk"
 			android:title="@string/p_link" />
 	</PreferenceCategory>
 

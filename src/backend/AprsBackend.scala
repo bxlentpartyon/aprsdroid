@@ -112,7 +112,7 @@ object AprsBackend {
 			R.xml.proto_aprsis, "aprsis"),
 		"afsk" -> new ProtoInfo(
 			(s, is, os) => new AfskProto(s, is, os),
-			R.xml.proto_afsk, "afsk_link"),
+			R.xml.proto_afsk, "afsk"),
 		"kiss" -> new ProtoInfo(
 			(s, is, os) => new KissProto(s, is, os),
 			R.xml.proto_kiss, "link"),
