@@ -159,7 +159,7 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AprsBackend(p
 			ser.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
 
 			// success: remember this for usb-attach launch
-			prefs.prefs.edit().putString(UsbTnc.deviceHandle(dev), prefs.getString("proto", "kiss")).commit()
+			prefs.prefs.edit().putString(UsbTnc.deviceHandle(dev), prefs.getString("proto", "afsk")).commit()
 
 			log("Opened " + ser.getClass().getSimpleName() + " at " + baudrate + "bd")
 			sis = new SerialInputStream(ser)
