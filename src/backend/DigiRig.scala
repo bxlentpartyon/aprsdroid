@@ -18,6 +18,8 @@ import java.io.{InputStream, OutputStream}
 import net.ab0oo.aprs.parser._
 import com.nogy.afu.soundmodem.{Message, APRSFrame, Afsk}
 import com.felhr.usbserial._
+import com.jazzido.PacketDroid.{AudioBufferProcessor, PacketCallback}
+import sivantoledo.ax25.PacketHandler
 
 object DigiRig {
 	def deviceHandle(dev : UsbDevice) = {
@@ -36,8 +38,10 @@ object DigiRig {
 	}
 }
 
-class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(service, prefs) {
-	override val TAG = "APRSdroid.Digirig"
+class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(service, prefs)
+	with PacketHandler with PacketCallback {
+
+		override val TAG = "APRSdroid.Digirig"
 
 	val USB_PERM_ACTION = "org.aprsdroid.app.DigiRig.PERM"
 	val ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED"
@@ -59,6 +63,25 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(
 	output.setVolume(AudioTrack.getMaxVolume())
 
 	val receiver = new BroadcastReceiver() {
+		override def onReceive(ctx: Context, i: Intent) {
+			Log.d(TAG, "onReceive: " + i)
+			if (i.getAction() == ACTION_USB_DETACHED) {
+				log("USB device detached.")
+				ctx.stopService(AprsService.intent(ctx, AprsService.SERVICE))
+				return
+			}
+			val granted = i.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED)
+			if (!granted) {
+				service.postAbort(service.getString(R.string.p_serial_noperm))
+				return
+			}
+			log("Obtained USB permissions.")
+			thread = new UsbThread()
+			thread.start()
+		}
+	}
+
+	override val btScoReceiver = new BroadcastReceiver() {
 		override def onReceive(ctx : Context, i : Intent) {
 			Log.d(TAG, "onReceive: " + i)
 			if (i.getAction() == ACTION_USB_DETACHED) {
