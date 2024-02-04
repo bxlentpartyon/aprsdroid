@@ -94,7 +94,7 @@ object AprsBackend {
 		"digirig" -> new BackendInfo(
 			(s, p) => new DigiRig(s, p),
 			R.xml.backend_digirig,
-			Set(),
+                        Set(Manifest.permission.RECORD_AUDIO),
 			CAN_DUPLEX,
 			PASSCODE_NONE
 		)

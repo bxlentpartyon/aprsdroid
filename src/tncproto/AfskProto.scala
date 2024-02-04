@@ -9,11 +9,9 @@ class AfskProto(service : AprsService, is : InputStream, os : OutputStream) exte
 	val TAG = "APRSdroid.AfskProto"
 
 	def readPacket() : String = {
-		Log.d(TAG, "readPacket")
-		"stuff"
+		""
 	}
 
 	def writePacket(p : APRSPacket) {
-		Log.d(TAG, "writePacket: " + p)
 	}
 }
