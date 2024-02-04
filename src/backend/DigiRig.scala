@@ -135,6 +135,32 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(
 		service.postAbort(service.getString(R.string.p_serial_notfound))
 	}
 
+	override def update(packet: APRSPacket): String = {
+		// Need to "parse" the packet in order to replace the Digipeaters
+		packet.setDigipeaters(Digipeater.parseList(Digis, true))
+		val from = packet.getSourceCall()
+		val to = packet.getDestinationCall()
+		val data = packet.getAprsInformation().toString()
+		val msg = new APRSFrame(from, to, Digis, data, FrameLength).getMessage()
+		Log.d(TAG, "update(): From: " + from + " To: " + to + " Via: " + Digis + " telling " + data)
+
+		ser.setRTS(true)
+		val bits_per_byte = 8
+		val bits_in_frame = packet.toAX25Frame().length / bits_per_byte
+		val ms_per_s = 1000
+		val sleep_ms = bits_in_frame * ms_per_s / 1200 // aprs is 1200 baud
+		val sleep_pad_ms = 1500
+		Thread.sleep(sleep_ms + sleep_pad_ms)
+		val result = sendMessage(msg)
+		Thread.sleep(sleep_ms + sleep_pad_ms)
+		ser.setRTS(false)
+
+		if (result)
+			"AFSK OK"
+		else
+			"AFSK busy"
+	}
+
 	override def stop() {
                 // Stop USB thread
 		if (alreadyRunning)
@@ -191,6 +217,7 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(
 			ser.setStopBits(UsbSerialInterface.STOP_BITS_1)
 			ser.setParity(UsbSerialInterface.PARITY_NONE)
 			ser.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+			ser.setRTS(false)
 
 			// success: remember this for usb-attach launch
 			prefs.prefs.edit().putString(UsbTnc.deviceHandle(dev), prefs.getString("proto", "afsk")).commit()
