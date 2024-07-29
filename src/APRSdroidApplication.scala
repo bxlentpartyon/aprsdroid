@@ -1,9 +1,8 @@
 package org.aprsdroid.app
 
 import android.app.Application
-import androidx.multidex.MultiDexApplication
 
-class APRSdroidApplication extends MultiDexApplication {
+class APRSdroidApplication extends Application {
 
 	override def onCreate() {
 		super.onCreate()
