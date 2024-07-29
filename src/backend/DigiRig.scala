@@ -164,7 +164,7 @@ class DigiRig(service : AprsService, prefs : PrefsWrapper) extends AfskUploader(
 		val to = packet.getDestinationCall()
 		val data = packet.getAprsInformation().toString()
 		val msg = new APRSFrame(from, to, Digis, data, FrameLength).getMessage()
-		Log.d(TAG, "update(): From: " + from + " To: " + to + " Via: " + Digis + " telling " + data)
+		Log.d(TAG, "update(): From: " + from + " To: " + to + " Via: " + Digis + " telling " + data + " FrameLength " + FrameLength)
 
 		ser.setRTS(true)
 		val bits_per_byte = 8
